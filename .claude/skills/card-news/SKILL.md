@@ -7,6 +7,8 @@ description: 뉴스 발췌문을 받아 카드뉴스 슬라이드 카피를 만�
    slides.json을 생성한다. 각 항목은 { eyebrow, headline, body, footer } 형태.
 2. slides.json을 output/slides.json에 저장한다.
 3. `node scripts/capture.mjs output/slides.json` 실행해 PNG 생성.
-4. 생성된 파일 목록과, Slack에 함께 올릴 caption(카드뉴스 요약 한 줄 + 원본 카피 전문)을 준비한다.
+4. 생성된 파일 목록과, Slack에 함께 올릴 caption을 준비한다.
+   caption은 CLAUDE.md의 "인스타그램 캡션 구조"와 "해시태그 규칙"을 그대로 따른다
+   (후킹 한 줄 → 발췌문+출처 → 코멘트 → 참여 유도 질문 → CTA → 해시태그).
 5. `node scripts/slack-upload.mjs '<files JSON>' '<caption>'` 실행해 Slack 업로드.
 6. 완료 후 몇 장을 업로드했는지 사용자에게 보고한다.
