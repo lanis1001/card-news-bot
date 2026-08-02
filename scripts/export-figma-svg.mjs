@@ -89,8 +89,9 @@ async function exportSlideToSvg(slide) {
       blocks: [],
     };
 
-    for (const cls of ['eyebrow', 'headline', 'body', 'footer']) {
+    for (const cls of ['eyebrow', 'headline', 'body', 'footer-left', 'footer-right']) {
       const el = document.querySelector('.' + cls);
+      if (!el || !el.textContent.trim()) continue;
       result.blocks.push({ cls, style: styleOf(el), lines: getLines(el) });
     }
     return result;

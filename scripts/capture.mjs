@@ -2,7 +2,8 @@ import { chromium } from 'playwright';
 import fs from 'fs';
 import path from 'path';
 
-// slides.json 형식: [{ eyebrow, headline, body, footer }, ...]
+// slides.json 형식: [{ eyebrow, headline, body, footer, footerRight? }, ...]
+// footerRight: 우측 하단에 별도로 표기할 텍스트 (예: 출처). 없으면 비워둔다.
 const slidesPath = process.argv[2] || 'output/slides.json';
 const slides = JSON.parse(fs.readFileSync(slidesPath, 'utf-8'));
 const template = fs.readFileSync('templates/card-template.html', 'utf-8');
@@ -20,7 +21,8 @@ for (let i = 0; i < slides.length; i++) {
     .replace('{{EYEBROW}}', s.eyebrow ?? '')
     .replace('{{HEADLINE}}', s.headline ?? '')
     .replace('{{BODY}}', s.body ?? '')
-    .replace('{{FOOTER}}', s.footer ?? '');
+    .replace('{{FOOTER}}', s.footer ?? '')
+    .replace('{{FOOTER_RIGHT}}', s.footerRight ?? '');
   await page.setContent(html);
   const filePath = path.join(outDir, `slide-${String(i + 1).padStart(2, '0')}.png`);
   await page.screenshot({ path: filePath });

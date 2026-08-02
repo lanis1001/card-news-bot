@@ -19,10 +19,23 @@
     color: #1a1a1a;
     position: relative;
   }
-  .eyebrow { font-size: 26px; font-weight: 500; letter-spacing: 5px; text-transform: uppercase; margin-bottom: 30px; color: #6b5f4a; }
-  .headline { font-size: 60px; font-weight: 600; line-height: 1.35; margin-bottom: 40px; letter-spacing: -1px; }
-  .body { font-size: 32px; font-weight: 400; line-height: 1.65; }
-  .footer { position: absolute; bottom: 60px; left: 70px; font-size: 22px; font-weight: 500; letter-spacing: 2px; }
+  .eyebrow { font-size: 26px; font-weight: 500; letter-spacing: 5px; text-transform: uppercase; margin-bottom: 30px; color: #6b5f4a; word-break: keep-all; }
+  .headline { font-size: 60px; font-weight: 600; line-height: 1.35; margin-bottom: 40px; letter-spacing: -1px; word-break: keep-all; }
+  .body { font-size: 32px; font-weight: 400; line-height: 1.65; word-break: keep-all; }
+  .footer {
+    position: absolute;
+    bottom: 60px;
+    left: 70px;
+    right: 70px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    word-break: keep-all;
+  }
+  .footer-right { color: #6b5f4a; }
 </style>
 </head>
 <body>
@@ -30,7 +43,10 @@
     <div class="eyebrow">{{EYEBROW}}</div>
     <div class="headline">{{HEADLINE}}</div>
     <div class="body">{{BODY}}</div>
-    <div class="footer">{{FOOTER}}</div>
+    <div class="footer">
+      <span class="footer-left">{{FOOTER}}</span>
+      <span class="footer-right">{{FOOTER_RIGHT}}</span>
+    </div>
   </div>
 </body>
 </html>
