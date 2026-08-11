@@ -1,0 +1,36 @@
+name: Threads Post
+
+on:
+  workflow_dispatch:
+    inputs:
+      topic:
+        description: "쓰레드 주제"
+        required: true
+        type: string
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate thread drafts (Claude API)
+        id: generate
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          POSTS=$(node scripts/generate-threads.mjs "${{ github.event.inputs.topic }}")
+          echo "posts=$POSTS" >> "$GITHUB_OUTPUT"
+
+      - name: Send to Slack
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
+        run: node scripts/send-threads.mjs '${{ steps.generate.outputs.posts }}'

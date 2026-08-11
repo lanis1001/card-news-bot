@@ -14,16 +14,29 @@
 
 이미지 디자인은 Figma가 아니라 `templates/card-template.html` 파일의 CSS로 고정되어 있어서, 텍스트만 바뀌고 디자인은 항상 일관돼요.
 
-## 사용하는 두 가지 방법
+## 사용하는 방법
 
-**1. Claude Code 안에서 직접**
+**1. 폰에서, 터미널 없이 (추천) — GitHub Actions**
+
+컴퓨터를 켜둘 필요도, 터미널을 열 필요도 없어요. GitHub 모바일 앱(또는 아무 브라우저)에서:
+
+1. GitHub 앱 열기 → 이 저장소(`card-news-bot`) → **Actions** 탭
+2. **"Card News"** 워크플로우 선택 → **Run workflow** 탭
+3. `excerpt` 칸에 뉴스 발췌문 붙여넣기 → **Run workflow** 버튼 탭
+4. 1~2분 후 슬랙 `#sns`에 카드뉴스가 도착해요
+
+쓰레드 문구는 같은 방식으로 **"Threads Post"** 워크플로우를 실행하면 돼요 (`topic` 칸에 주제 입력).
+
+처음 한 번만 설정이 필요해요 — 아래 [처음 설치하는 법](#처음-설치하는-법) 참고.
+
+**2. Claude Code 안에서 직접**
 
 ```
 /card-news 오늘자 OO신문 사설 중 "..." 발췌문
 /threads-post 필사가 더 머리에 잘 남는 이유
 ```
 
-**2. 슬랙에서 봇 멘션으로 (Claude Code를 열 필요 없음)**
+**3. 슬랙에서 봇 멘션으로 (컴퓨터를 켜둔 상태에서)**
 
 터미널에서 `npm run bot` 을 실행해 봇을 켜두면, 슬랙 `#sns` 채널에서 봇을 멘션하는 것만으로 카드뉴스를 만들 수 있어요.
 
@@ -31,27 +44,45 @@
 @LÉTRA봇 카드뉴스 만들어줘: "오늘 서울 낮 기온이 35도까지 올랐다"
 ```
 
-컴퓨터를 계속 켜둘 필요 없이, 무료 클라우드 서버에서 24시간 이 봇을 돌리는 방법은 [deploy/README.md](deploy/README.md)를 참고하세요.
+컴퓨터를 계속 켜둘 필요 없이, 무료 클라우드 서버에서 24시간 이 봇을 돌리는 방법은 [deploy/README.md](deploy/README.md)를 참고하세요 (오라클 클라우드 가입이 까다로울 수 있어서, 1번 방식을 먼저 추천해요).
 
 ## 폴더 구조
 
 ```
 card-news-bot/
+├── .github/workflows/
+│   ├── card-news.yml           # 폰에서 실행하는 카드뉴스 워크플로우
+│   └── threads-post.yml        # 폰에서 실행하는 쓰레드 워크플로우
 ├── .claude/
 │   ├── skills/card-news/     # 카드뉴스 제작 스킬 정의
 │   └── commands/              # /card-news, /threads-post 슬래시 커맨드
 ├── templates/
 │   └── card-template.html     # 카드 디자인 (여기 CSS만 바꾸면 전체 디자인 변경)
 ├── scripts/
+│   ├── generate-slides.mjs     # Claude API로 카드뉴스 카피 생성 (GitHub Actions용)
+│   ├── generate-threads.mjs    # Claude API로 쓰레드 문구 생성 (GitHub Actions용)
+│   ├── send-threads.mjs        # 쓰레드 문구를 슬랙에 전송
+│   ├── list-slide-files.mjs    # slides.json → PNG 파일 목록 변환
 │   ├── capture.mjs             # slides.json → PNG 변환
 │   ├── slack-upload.mjs        # PNG를 슬랙에 업로드
 │   ├── slack-text.mjs          # 텍스트만 슬랙에 전송
-│   └── bot-server.mjs          # 슬랙 양방향 봇 (Socket Mode)
+│   └── bot-server.mjs          # 슬랙 양방향 봇 (Socket Mode, 로컬/서버용)
 ├── CLAUDE.md                   # 계정 톤/문체 가이드
 └── .env                        # 슬랙 토큰 (커밋되지 않음, 직접 만들어야 함)
 ```
 
 ## 처음 설치하는 법
+
+### GitHub Actions(모바일)로 쓰려면 — 이것만 하면 됨
+
+1. [console.anthropic.com](https://console.anthropic.com)에서 API 키 발급 (Anthropic 유료 API 키 — Claude 구독과는 별개)
+2. 이 저장소 GitHub 페이지 → **Settings → Secrets and variables → Actions** → **New repository secret** 로 아래 3개 등록
+   - `ANTHROPIC_API_KEY`
+   - `SLACK_BOT_TOKEN`
+   - `SLACK_CHANNEL_ID`
+3. 끝. Actions 탭에서 워크플로우를 실행하면 돼요.
+
+### 로컬 컴퓨터에서 직접/봇으로 쓰려면
 
 1. Node.js 18+ 설치
 2. `npm install` 후 `npx playwright install chromium`
@@ -65,6 +96,7 @@ card-news-bot/
    SLACK_BOT_TOKEN=xoxb-...
    SLACK_APP_TOKEN=xapp-...
    SLACK_CHANNEL_ID=C0BMEA3MBGE
+   ANTHROPIC_API_KEY=sk-ant-...   (GitHub Actions 없이 로컬에서 generate-slides.mjs를 쓸 때만 필요)
    ```
 
 7. 봇을 채널에 초대: `/invite @봇이름`
