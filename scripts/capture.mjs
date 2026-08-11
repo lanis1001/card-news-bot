@@ -24,6 +24,16 @@ for (let i = 0; i < slides.length; i++) {
     .replace('{{FOOTER}}', s.footer ?? '')
     .replace('{{FOOTER_RIGHT}}', s.footerRight ?? '');
   await page.setContent(html);
+
+  const lineCheck = await page.evaluate(() => {
+    const el = document.querySelector('.body');
+    const lineHeight = parseFloat(getComputedStyle(el).lineHeight);
+    return { lines: Math.round(el.scrollHeight / lineHeight), text: el.textContent };
+  });
+  if (lineCheck.lines > 2) {
+    console.warn(`⚠ 슬라이드 ${i + 1}: 본문이 ${lineCheck.lines}줄이에요 (최대 2줄 권장). "${lineCheck.text}"`);
+  }
+
   const filePath = path.join(outDir, `slide-${String(i + 1).padStart(2, '0')}.png`);
   await page.screenshot({ path: filePath });
   files.push(filePath);
