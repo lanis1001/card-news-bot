@@ -8,6 +8,9 @@ on:
         required: true
         type: string
 
+permissions:
+  contents: read
+
 jobs:
   generate:
     runs-on: ubuntu-latest
@@ -24,19 +27,15 @@ jobs:
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
 
-      - name: Generate slide copy (Claude API)
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: node scripts/generate-slides.mjs "${{ github.event.inputs.excerpt }}"
-
-      - name: Render PNG images
-        run: node scripts/capture.mjs output/slides.json
-
-      - name: Upload to Slack
+      - name: Run card-news skill
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            card-news 스킬을 사용해서 다음 소재로 카드뉴스를 제작하고 Slack에 업로드해줘: ${{ github.event.inputs.excerpt }}
+          claude_args: |
+            --allowedTools Bash,Read,Write,Edit,Glob,Grep
+            --dangerously-skip-permissions
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
           SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
-        run: |
-          FILES=$(node scripts/list-slide-files.mjs)
-          CAPTION=$(cat output/caption.txt)
-          node scripts/slack-upload.mjs "$FILES" "$CAPTION"

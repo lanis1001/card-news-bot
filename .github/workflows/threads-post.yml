@@ -8,6 +8,9 @@ on:
         required: true
         type: string
 
+permissions:
+  contents: read
+
 jobs:
   generate:
     runs-on: ubuntu-latest
@@ -21,16 +24,16 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Generate thread drafts (Claude API)
-        id: generate
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: |
-          POSTS=$(node scripts/generate-threads.mjs "${{ github.event.inputs.topic }}")
-          echo "posts=$POSTS" >> "$GITHUB_OUTPUT"
-
-      - name: Send to Slack
+      - name: Run threads-post via Claude Code
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            CLAUDE.md의 쓰레드 문체 가이드에 맞춰 다음 주제로 150자 내외 쓰레드 문구를 3개 만들고,
+            각각을 `node scripts/slack-text.mjs '<문구>'`로 Slack #sns 채널에 전송해줘: ${{ github.event.inputs.topic }}
+          claude_args: |
+            --allowedTools Bash,Read,Write,Edit,Glob,Grep
+            --dangerously-skip-permissions
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
           SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
-        run: node scripts/send-threads.mjs '${{ steps.generate.outputs.posts }}'

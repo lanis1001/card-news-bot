@@ -59,10 +59,6 @@ card-news-bot/
 ├── templates/
 │   └── card-template.html     # 카드 디자인 (여기 CSS만 바꾸면 전체 디자인 변경)
 ├── scripts/
-│   ├── generate-slides.mjs     # Claude API로 카드뉴스 카피 생성 (GitHub Actions용)
-│   ├── generate-threads.mjs    # Claude API로 쓰레드 문구 생성 (GitHub Actions용)
-│   ├── send-threads.mjs        # 쓰레드 문구를 슬랙에 전송
-│   ├── list-slide-files.mjs    # slides.json → PNG 파일 목록 변환
 │   ├── capture.mjs             # slides.json → PNG 변환
 │   ├── slack-upload.mjs        # PNG를 슬랙에 업로드
 │   ├── slack-text.mjs          # 텍스트만 슬랙에 전송
@@ -75,9 +71,11 @@ card-news-bot/
 
 ### GitHub Actions(모바일)로 쓰려면 — 이것만 하면 됨
 
-1. [console.anthropic.com](https://console.anthropic.com)에서 API 키 발급 (Anthropic 유료 API 키 — Claude 구독과는 별개)
+API 결제 없이 지금 쓰는 Claude 구독을 그대로 재사용해요.
+
+1. 터미널에서 `claude setup-token` 실행 → 브라우저에서 로그인/승인 → `sk-ant-oat01-...` 토큰 발급
 2. 이 저장소 GitHub 페이지 → **Settings → Secrets and variables → Actions** → **New repository secret** 로 아래 3개 등록
-   - `ANTHROPIC_API_KEY`
+   - `CLAUDE_CODE_OAUTH_TOKEN` (방금 발급받은 토큰)
    - `SLACK_BOT_TOKEN`
    - `SLACK_CHANNEL_ID`
 3. 끝. Actions 탭에서 워크플로우를 실행하면 돼요.
@@ -96,7 +94,6 @@ card-news-bot/
    SLACK_BOT_TOKEN=xoxb-...
    SLACK_APP_TOKEN=xapp-...
    SLACK_CHANNEL_ID=C0BMEA3MBGE
-   ANTHROPIC_API_KEY=sk-ant-...   (GitHub Actions 없이 로컬에서 generate-slides.mjs를 쓸 때만 필요)
    ```
 
 7. 봇을 채널에 초대: `/invite @봇이름`

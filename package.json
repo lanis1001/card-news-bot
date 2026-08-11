@@ -12,7 +12,6 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.116.0",
     "@slack/bolt": "^5.0.0",
     "@slack/web-api": "^8.0.0",
     "dotenv": "^17.4.2",
