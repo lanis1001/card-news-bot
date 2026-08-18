@@ -1,10 +1,8 @@
-import { WebClient } from '@slack/web-api';
-import dotenv from 'dotenv';
 import fs from 'fs';
+import { createSlackClient, getSlackChannelId } from './lib/slack-client.mjs';
 
-dotenv.config();
-const client = new WebClient(process.env.SLACK_BOT_TOKEN);
-const channel = process.env.SLACK_CHANNEL_ID;
+const client = createSlackClient();
+const channel = getSlackChannelId();
 
 const [filesJson, caption] = [process.argv[2], process.argv[3] || ''];
 const files = JSON.parse(filesJson);

@@ -1,11 +1,8 @@
-import fs from 'fs';
+import { readSlides, writeSlides } from './lib/slides.mjs';
 
-// 마지막 슬라이드는 항상 같은 문구를 쓴다 (통일성 유지 목적).
-// AI가 생성한 마지막 슬라이드 문구가 매번 달라지는 걸 막기 위해, capture.mjs 실행 전에
-// 이 스크립트로 강제 고정한다. 사용법: node scripts/finalize-slides.mjs [output/slides.json]
-
-const path = process.argv[2] || 'output/slides.json';
-const slides = JSON.parse(fs.readFileSync(path, 'utf-8'));
+// 마지막 슬라이드 문구 고정 (통일성 유지). 사용법: node scripts/finalize-slides.mjs [output/slides.json]
+const slidesPath = process.argv[2] || 'output/slides.json';
+const slides = readSlides(slidesPath);
 
 if (slides.length === 0) {
   console.error('slides.json이 비어있어요.');
@@ -20,5 +17,5 @@ slides[slides.length - 1] = {
   footerRight: '',
 };
 
-fs.writeFileSync(path, JSON.stringify(slides, null, 2));
+writeSlides(slidesPath, slides);
 console.log('마지막 슬라이드 고정 문구 적용 완료');

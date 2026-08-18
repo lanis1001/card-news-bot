@@ -1,6 +1,8 @@
 import { chromium } from 'playwright';
 import fs from 'fs';
 import path from 'path';
+import { loadCardTemplate, renderCardHtml } from './lib/card-template.mjs';
+import { readSlides } from './lib/slides.mjs';
 
 // 사용법:
 //   node scripts/export-figma-svg.mjs                          → 디자인 시스템 예시 카드 1장
@@ -16,9 +18,9 @@ const defaultSlide = {
 
 const slidesPath = process.argv[2];
 const namePrefix = process.argv[3] || (slidesPath ? path.basename(path.dirname(slidesPath)) : 'letra-card-template');
-const slides = slidesPath ? JSON.parse(fs.readFileSync(slidesPath, 'utf-8')) : [defaultSlide];
+const slides = slidesPath ? readSlides(slidesPath) : [defaultSlide];
 
-const template = fs.readFileSync('templates/card-template.html', 'utf-8');
+const template = loadCardTemplate();
 const outDir = 'figma-export';
 if (!fs.existsSync(outDir)) fs.mkdirSync(outDir);
 
@@ -30,11 +32,7 @@ function esc(s) {
 }
 
 async function exportSlideToSvg(slide) {
-  const html = template
-    .replace('{{EYEBROW}}', slide.eyebrow ?? '')
-    .replace('{{HEADLINE}}', slide.headline ?? '')
-    .replace('{{BODY}}', slide.body ?? '')
-    .replace('{{FOOTER}}', slide.footer ?? '');
+  const html = renderCardHtml(template, slide, { includeFooterRight: false });
 
   await page.setContent(html);
   await page.evaluate(() => document.fonts.ready);
