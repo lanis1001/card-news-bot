@@ -60,9 +60,15 @@ card-news-bot/
 │   └── card-template.html     # 카드 디자인 (여기 CSS만 바꾸면 전체 디자인 변경)
 ├── scripts/
 │   ├── capture.mjs             # slides.json → PNG 변환
+│   ├── finalize-slides.mjs     # 마지막 슬라이드 문구 고정 (통일성 유지)
+│   ├── export-figma-svg.mjs    # 카드를 피그마에서 편집 가능한 SVG로 내보내기
 │   ├── slack-upload.mjs        # PNG를 슬랙에 업로드
 │   ├── slack-text.mjs          # 텍스트만 슬랙에 전송
-│   └── bot-server.mjs          # 슬랙 양방향 봇 (Socket Mode, 로컬/서버용)
+│   ├── bot-server.mjs          # 슬랙 양방향 봇 (Socket Mode, 로컬/서버용)
+│   └── lib/                    # 스크립트들이 공유하는 공통 기능
+│       ├── card-template.mjs   # HTML 템플릿 로드 및 텍스트 치환
+│       ├── slides.mjs          # slides.json 읽기/쓰기
+│       └── slack-client.mjs    # 슬랙 클라이언트 생성
 ├── CLAUDE.md                   # 계정 톤/문체 가이드
 └── .env                        # 슬랙 토큰 (커밋되지 않음, 직접 만들어야 함)
 ```

@@ -32,7 +32,7 @@ function esc(s) {
 }
 
 async function exportSlideToSvg(slide) {
-  const html = renderCardHtml(template, slide, { includeFooterRight: false });
+  const html = renderCardHtml(template, slide);
 
   await page.setContent(html);
   await page.evaluate(() => document.fonts.ready);
