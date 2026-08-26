@@ -10,8 +10,9 @@ description: 뉴스 발췌문을 받아 카드뉴스 슬라이드 카피를 만�
    footerRight는 "오늘의 이슈" 슬라이드에만 "출처 · 프로필 링크 참고"로 채우고, 나머지
    슬라이드는 생략한다 (CLAUDE.md "Footer 구조" 참고).
 2. slides.json을 output/slides.json에 저장한다.
-3. `node scripts/finalize-slides.mjs output/slides.json` 실행해 마지막 슬라이드 문구를
-   고정값("다음 주에 또 써요" 등)으로 강제 통일한다. 절대 건너뛰지 않는다.
+3. `node scripts/finalize-slides.mjs output/slides.json` 실행해 첫 슬라이드 eyebrow("오늘의
+   필사")와 마지막 슬라이드 문구("다음 주에 또 써요" 등)를 고정값으로 강제 통일한다. 절대
+   건너뛰지 않는다.
 4. `node scripts/capture.mjs output/slides.json` 실행해 PNG 생성. 이 단계에서 본문이
    2줄을 넘는 슬라이드가 있다는 경고가 뜨면, 그 슬라이드의 body를 더 짧게 줄여서
    slides.json을 고치고 3~4번을 다시 실행한다.

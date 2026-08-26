@@ -1,6 +1,6 @@
 import { readSlides, writeSlides } from './lib/slides.mjs';
 
-// 마지막 슬라이드 문구 고정 (통일성 유지). 사용법: node scripts/finalize-slides.mjs [output/slides.json]
+// 첫/마지막 슬라이드 문구 고정 (통일성 유지). 사용법: node scripts/finalize-slides.mjs [output/slides.json]
 const slidesPath = process.argv[2] || 'output/slides.json';
 const slides = readSlides(slidesPath);
 
@@ -8,6 +8,8 @@ if (slides.length === 0) {
   console.error('slides.json이 비어있어요.');
   process.exit(1);
 }
+
+slides[0].eyebrow = '오늘의 필사';
 
 slides[slides.length - 1] = {
   eyebrow: 'LÉTRA',
