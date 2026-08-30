@@ -21,13 +21,23 @@ for (let i = 0; i < slides.length; i++) {
   const html = renderCardHtml(template, slide);
   await page.setContent(html);
 
-  const lineCheck = await page.evaluate(() => {
-    const el = document.querySelector('.body');
-    const lineHeight = parseFloat(getComputedStyle(el).lineHeight);
-    return { lines: Math.round(el.scrollHeight / lineHeight), text: el.textContent };
-  });
-  if (lineCheck.lines > 2) {
-    console.warn(`⚠ 슬라이드 ${i + 1}: 본문이 ${lineCheck.lines}줄이에요 (최대 2줄 권장). "${lineCheck.text}"`);
+  const countLines = (selector) =>
+    page.evaluate((sel) => {
+      const el = document.querySelector(sel);
+      const lineHeight = parseFloat(getComputedStyle(el).lineHeight);
+      return { lines: Math.round(el.scrollHeight / lineHeight), text: el.textContent };
+    }, selector);
+
+  const bodyCheck = await countLines('.body');
+  if (bodyCheck.lines > 2) {
+    console.warn(`⚠ 슬라이드 ${i + 1}: 본문이 ${bodyCheck.lines}줄이에요 (최대 2줄 권장). "${bodyCheck.text}"`);
+  }
+
+  if (i === 0) {
+    const headlineCheck = await countLines('.headline');
+    if (headlineCheck.lines > 1) {
+      console.warn(`⚠ 슬라이드 1: 제목이 ${headlineCheck.lines}줄이에요 (한 줄 권장). "${headlineCheck.text}"`);
+    }
   }
 
   const filePath = path.join(outDir, `slide-${String(i + 1).padStart(2, '0')}.png`);
